@@ -26,7 +26,7 @@ def buscar_por_id(id):
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
     sql = """
-        SELECT titulo, descricao, tipo, AVG(nota) AS nota, img.caminho AS capa
+        SELECT locais.* , AVG(nota) AS nota, img.caminho AS capa
         FROM locais
         LEFT JOIN avaliacoes ON locais.id = local_id
         LEFT JOIN imagens img ON img.tipo_origem = 'L' 
