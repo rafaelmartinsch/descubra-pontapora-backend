@@ -1,9 +1,6 @@
 from app.services.db import conectar
 
-def listar_eventos_ordenados_por_data():
-    """
-    Lista todos os eventos ordenados pela data em ordem ascendente.
-    """
+def ordenados_por_data():
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
     sql = """

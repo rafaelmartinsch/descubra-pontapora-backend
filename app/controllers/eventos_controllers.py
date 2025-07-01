@@ -1,4 +1,4 @@
-import app.models.locais_model as model
+import app.models.eventos_model as model
 
-def ordem_por_data():
-    return model.ordem_por_data()
+def ordenados_por_data():
+    return model.ordenados_por_data()
