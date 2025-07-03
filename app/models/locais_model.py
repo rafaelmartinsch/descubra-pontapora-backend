@@ -40,3 +40,43 @@ def buscar_por_id(id):
     cursor.close()
     conexao.close()
     return local
+
+
+def listar_pontos_turisticos(categoria=None, subcategoria=None):
+    conexao = conectar()
+    cursor = conexao.cursor(dictionary=True)
+    
+    # Base da query
+    sql = """
+        SELECT locais.*, AVG(nota) AS nota, img.caminho AS capa
+        FROM locais
+        LEFT JOIN avaliacoes ON locais.id = local_id
+        LEFT JOIN imagens img ON img.tipo_origem = 'L' 
+            AND img.origem_id = locais.id 
+            AND img.capa = 1
+        WHERE locais.grupo = 'T'
+    """
+    
+    params = []
+    
+    # Adiciona filtro de categoria se fornecida
+    if categoria:
+        sql += " AND locais.tipo = %s"
+        params.append(categoria)
+    
+    # Adiciona filtro de subcategoria se fornecida
+    if subcategoria:
+        sql += " AND locais.categoria = %s"
+        params.append(subcategoria)
+    
+    # Finaliza a query
+    sql += """
+        GROUP BY locais.id
+        ORDER BY nota DESC, titulo DESC
+    """
+    
+    cursor.execute(sql, params)
+    locais = cursor.fetchall()
+    cursor.close()
+    conexao.close()
+    return locais
