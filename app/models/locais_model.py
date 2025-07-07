@@ -53,15 +53,13 @@ def listar_pontos_turisticos(categoria=None, subcategoria=None):
         LEFT JOIN avaliacoes ON locais.id = local_id
         LEFT JOIN imagens img ON img.tipo_origem = 'L' 
             AND img.origem_id = locais.id 
-            AND img.capa = 1
-        WHERE locais.grupo = 'T'
     """
     
     params = []
     
     # Adiciona filtro de categoria se fornecida
     if categoria:
-        sql += " AND locais.tipo = %s"
+        sql += " WHERE locais.tipo = %s"
         params.append(categoria)
     
     # Adiciona filtro de subcategoria se fornecida
