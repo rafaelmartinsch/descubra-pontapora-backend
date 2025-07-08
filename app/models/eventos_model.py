@@ -17,9 +17,9 @@ SELECT
     I.caminho AS caminho_imagem_capa, -- Retorna o caminho da imagem, ou NULL se não houver
     I.legenda AS legenda_imagem_capa   -- Opcional: Retorna a legenda da imagem também
 FROM
-    Eventos AS E
+    eventos AS E
 LEFT JOIN
-    Imagens AS I ON I.origem_id = E.id AND I.capa = 1
+    imagens AS I ON I.origem_id = E.id AND I.capa = 1
 ORDER BY
     E.data ASC;
             """
