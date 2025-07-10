@@ -4,6 +4,17 @@ import app.controllers.locais_controller as controller
 locais_bp = Blueprint('locais', __name__, url_prefix='/locais')
 
 @locais_bp.route('/', methods=['GET'])
+def listar_todos_os_locais():
+    categoria = request.args.get('categoria')
+    subcategoria = request.args.get('subcategoria')
+    try:
+        locais = controller.listar_todos_os_locais(categoria, subcategoria)
+        return jsonify(locais), 200
+    except Exception as e:
+        return jsonify({'mensagem': str(e)}), 500
+    
+
+@locais_bp.route('/turisticos', methods=['GET'])
 def listar_pontos_turisticos():
     categoria = request.args.get('categoria')
     subcategoria = request.args.get('subcategoria')
@@ -12,6 +23,7 @@ def listar_pontos_turisticos():
         return jsonify(locais), 200
     except Exception as e:
         return jsonify({'mensagem': str(e)}), 500
+
 @locais_bp.route('/top4/', methods=['GET'])
 def listar_top4():
     tipo = request.args.get('tipo')
