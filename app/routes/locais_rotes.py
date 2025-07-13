@@ -24,11 +24,13 @@ def listar_pontos_turisticos():
     except Exception as e:
         return jsonify({'mensagem': str(e)}), 500
 
+##Atende: Página Inícial destaques
 @locais_bp.route('/top4/', methods=['GET'])
 def listar_top4():
+    grupo = request.args.get('grupo')
     tipo = request.args.get('tipo')
     try:
-        locais = controller.listar_top4(tipo)
+        locais = controller.listar_top4(grupo, tipo)
         return jsonify(locais), 200
     except Exception as e:
         return jsonify({'mensagem': str(e)}), 500

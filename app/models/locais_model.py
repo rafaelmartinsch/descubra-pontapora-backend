@@ -1,6 +1,20 @@
 from app.services.db import conectar
 
-def listar_top4(tipo):
+def listar_top4(grupo, tipo):
+    """
+    Retorna os 4 principais locais ordenados por nota ou ordem alfabética.
+    Args:
+        grupo (str): Código do grupo, podendo ser:
+            - 'T': Tipo T
+            - 'E': Tipo E
+        tipo (str, optional): Filtro adicional para o tipo. Pode ser None.
+    Returns:
+        list: Lista com até 4 itens de destaque.
+    Example:
+        listar_top4("T")
+        listar_top4("E", "promo")
+    """
+    pass  # implementação
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
     sql = """
@@ -10,12 +24,12 @@ def listar_top4(tipo):
         LEFT JOIN imagens img ON img.tipo_origem = 'L' 
             AND img.origem_id = locais.id 
             AND img.capa = 1
-        WHERE locais.tipo = %s
+        WHERE locais.grupo = %s  AND locais.tipo LIKE %s
         GROUP BY locais.id, titulo, locais.tipo, descricao, img.caminho
         ORDER BY nota DESC, titulo DESC
         LIMIT 4
     """
-    cursor.execute(sql, (tipo,))
+    cursor.execute(sql, (grupo, '%'+tipo+'%'))
     locais = cursor.fetchall()
     cursor.close()
     conexao.close()
