@@ -3,12 +3,12 @@ import app.controllers.locais_controller as controller
 
 locais_bp = Blueprint('locais', __name__, url_prefix='/locais')
 
-@locais_bp.route('/', methods=['GET'])
-def listar_todos_os_locais():
+@locais_bp.route('/estabelecimentos', methods=['GET'])
+def listar_estabelecimentos():
     categoria = request.args.get('categoria')
     subcategoria = request.args.get('subcategoria')
     try:
-        locais = controller.listar_todos_os_locais(categoria, subcategoria)
+        locais = controller.listar_estabelecimentos(categoria, subcategoria)
         return jsonify(locais), 200
     except Exception as e:
         return jsonify({'mensagem': str(e)}), 500

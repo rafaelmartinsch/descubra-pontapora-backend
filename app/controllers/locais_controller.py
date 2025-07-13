@@ -10,5 +10,5 @@ def buscar_por_id(id):
 def listar_pontos_turisticos(categoria, subcategoria):
     return model.listar_pontos_turisticos(categoria, subcategoria)
 
-def listar_todos_os_locais(categoria, subcategoria):
-    return model.listar_todos_os_locais(categoria, subcategoria)
+def listar_estabelecimentos(categoria, subcategoria):
+    return model.listar_estabelecimentos(categoria, subcategoria)

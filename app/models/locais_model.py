@@ -10,9 +10,6 @@ def listar_top4(grupo, tipo):
         tipo (str, optional): Filtro adicional para o tipo. Pode ser None.
     Returns:
         list: Lista com até 4 itens de destaque.
-    Example:
-        listar_top4("T")
-        listar_top4("E", "promo")
     """
     pass  # implementação
     conexao = conectar()
@@ -66,7 +63,7 @@ def listar_pontos_turisticos(categoria=None, subcategoria=None):
         LEFT JOIN avaliacoes ON locais.id = local_id
         LEFT JOIN imagens img ON img.tipo_origem = 'L' 
             AND img.origem_id = locais.id 
-        WHERE locais.tipo != 'Comércio'
+        WHERE locais.grupo = 'T'
     """
     
     params = []
@@ -93,7 +90,7 @@ def listar_pontos_turisticos(categoria=None, subcategoria=None):
     conexao.close()
     return locais
 
-def listar_todos_os_locais(categoria=None, subcategoria=None):
+def listar_estabelecimentos(categoria=None, subcategoria=None):
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
     
@@ -104,13 +101,14 @@ def listar_todos_os_locais(categoria=None, subcategoria=None):
         LEFT JOIN avaliacoes ON locais.id = local_id
         LEFT JOIN imagens img ON img.tipo_origem = 'L' 
             AND img.origem_id = locais.id 
+        WHERE locais.grupo = 'E' 
     """
     
     params = []
     
     # Adiciona filtro de categoria se fornecida
     if categoria:
-        sql += " WHERE locais.tipo = %s"
+        sql += " AND locais.tipo = %s"
         params.append(categoria)
     
     # Adiciona filtro de subcategoria se fornecida
