@@ -19,7 +19,7 @@ SELECT
 FROM
     eventos AS E
 LEFT JOIN
-    imagens AS I ON I.origem_id = E.id AND I.capa = 1
+    imagens AS I ON I.origem_id = E.id AND I.capa = 1 AND I.capa='E'
 ORDER BY
     E.data ASC;
             """
