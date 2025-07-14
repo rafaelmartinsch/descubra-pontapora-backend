@@ -1,4 +1,4 @@
-from .usuario_rotes import usuario_bp
+from .usuario_routes import usuario_bp
 from .locais_rotes import locais_bp
 from .eventos_rotes import eventos_bp
 from .historia_routes import historia_bp
