@@ -1,14 +1,23 @@
-import app.models.locais_model as model
+import hashlib
+import app.models.usuario_model as model
 
-def listar_top4(grupo, tipo):
-    tipo = tipo or ""
-    return model.listar_top4(grupo, tipo)
+def listar_todos():
+    return model.listar()
+ 
+def buscar(id):
+    return model.buscar(id)
 
-def buscar_por_id(id):
-    return model.buscar_por_id(id)
+def criar(dados):
+    senhaTxt = dados['senha']
+    dados['senha'] = hashlib.sha256(senhaTxt.encode()).hexdigest() 
+    return model.criar(dados)
 
-def listar_pontos_turisticos(categoria, subcategoria):
-    return model.listar_pontos_turisticos(categoria, subcategoria)
+def atualizar(dados):
+    
+    if dados['senha']:
+        hash = hashlib.sha256(dados['senha'].encode()).hexdigest() 
+        model.atualizar_senha(dados['id'], hash)
+    return model.atualizar(dados)
 
-def listar_estabelecimentos(categoria, subcategoria):
-    return model.listar_estabelecimentos(categoria, subcategoria)
+def deletar(id):
+    return model.deletar(id)
