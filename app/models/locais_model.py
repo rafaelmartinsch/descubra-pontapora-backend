@@ -11,7 +11,7 @@ def listar_top4(grupo, tipo):
     Returns:
         list: Lista com até 4 itens de destaque.
     """
-    pass  # implementação
+    pass
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
     sql = """
@@ -56,7 +56,6 @@ def listar_pontos_turisticos(categoria=None, subcategoria=None):
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
     
-    # Base da query
     sql = """
         SELECT locais.*, AVG(nota) AS nota, img.caminho AS capa
         FROM locais
@@ -68,17 +67,14 @@ def listar_pontos_turisticos(categoria=None, subcategoria=None):
     
     params = []
     
-    # Adiciona filtro de categoria se fornecida
     if categoria:
         sql += " AND locais.tipo = %s"
         params.append(categoria)
     
-    # Adiciona filtro de subcategoria se fornecida
     if subcategoria:
         sql += " AND locais.categoria = %s"
         params.append(subcategoria)
     
-    # Finaliza a query
     sql += """
         GROUP BY locais.id
         ORDER BY nota DESC, titulo DESC
@@ -94,7 +90,6 @@ def listar_estabelecimentos(categoria=None, subcategoria=None):
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
     
-    # Base da query
     sql = """
         SELECT locais.*, AVG(nota) AS nota, img.caminho AS capa
         FROM locais
@@ -106,17 +101,14 @@ def listar_estabelecimentos(categoria=None, subcategoria=None):
     
     params = []
     
-    # Adiciona filtro de categoria se fornecida
     if categoria:
         sql += " AND locais.tipo = %s"
         params.append(categoria)
     
-    # Adiciona filtro de subcategoria se fornecida
     if subcategoria:
         sql += " AND locais.categoria = %s"
         params.append(subcategoria)
     
-    # Finaliza a query
     sql += """
         GROUP BY locais.id
         ORDER BY nota DESC, titulo DESC
@@ -127,3 +119,105 @@ def listar_estabelecimentos(categoria=None, subcategoria=None):
     cursor.close()
     conexao.close()
     return locais
+
+def inserir_ponto_turistico(dados):
+    conexao = conectar()
+    cursor = conexao.cursor()
+    sql = """
+        INSERT INTO locais (titulo, descricao, tipo, categoria, grupo)
+        VALUES (%s, %s, %s, %s, 'T')
+    """
+    cursor.execute(sql, (
+        dados.get('titulo'),
+        dados.get('descricao'),
+        dados.get('tipo'),
+        dados.get('categoria')
+    ))
+    conexao.commit()
+    id_inserido = cursor.lastrowid
+    cursor.close()
+    conexao.close()
+    return id_inserido
+
+def atualizar_ponto_turistico(id, dados):
+    conexao = conectar()
+    cursor = conexao.cursor()
+    sql = """
+        UPDATE locais 
+        SET titulo = %s, descricao = %s, tipo = %s, categoria = %s
+        WHERE id = %s AND grupo = 'T'
+    """
+    cursor.execute(sql, (
+        dados.get('titulo'),
+        dados.get('descricao'),
+        dados.get('tipo'),
+        dados.get('categoria'),
+        id
+    ))
+    conexao.commit()
+    linhas_afetadas = cursor.rowcount
+    cursor.close()
+    conexao.close()
+    return linhas_afetadas
+
+def deletar_ponto_turistico(id):
+    conexao = conectar()
+    cursor = conexao.cursor()
+    sql = "DELETE FROM locais WHERE id = %s AND grupo = 'T'"
+    cursor.execute(sql, (id,))
+    conexao.commit()
+    linhas_afetadas = cursor.rowcount
+    cursor.close()
+    conexao.close()
+    return linhas_afetadas
+
+def inserir_estabelecimento(dados):
+    conexao = conectar()
+    cursor = conexao.cursor()
+    sql = """
+        INSERT INTO locais (titulo, descricao, tipo, categoria, grupo)
+        VALUES (%s, %s, %s, %s, 'E')
+    """
+    cursor.execute(sql, (
+        dados.get('titulo'),
+        dados.get('descricao'),
+        dados.get('tipo'),
+        dados.get('categoria')
+    ))
+    conexao.commit()
+    id_inserido = cursor.lastrowid
+    cursor.close()
+    conexao.close()
+    return id_inserido
+
+def atualizar_estabelecimento(id, dados):
+    conexao = conectar()
+    cursor = conexao.cursor()
+    sql = """
+        UPDATE locais 
+        SET titulo = %s, descricao = %s, tipo = %s, categoria = %s
+        WHERE id = %s AND grupo = 'E'
+    """
+    cursor.execute(sql, (
+        dados.get('titulo'),
+        dados.get('descricao'),
+        dados.get('tipo'),
+        dados.get('categoria'),
+        id
+    ))
+    conexao.commit()
+    linhas_afetadas = cursor.rowcount
+    cursor.close()
+    conexao.close()
+    return linhas_afetadas
+
+def deletar_estabelecimento(id):
+    conexao = conectar()
+    cursor = conexao.cursor()
+    sql = "DELETE FROM locais WHERE id = %s AND grupo = 'E'"
+    cursor.execute(sql, (id,))
+    conexao.commit()
+    linhas_afetadas = cursor.rowcount
+    cursor.close()
+    conexao.close()
+    return linhas_afetadas
