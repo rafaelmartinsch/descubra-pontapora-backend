@@ -45,3 +45,12 @@ def excluir(id):
         return jsonify(resultado), 200
     except Exception as e:
         return jsonify({'mensagem': str(e)}), 500
+    
+@historia_bp.route('/autores', methods=['GET'])
+def listar_autores():
+    try:
+        autores = controller.listar_autores()
+        return jsonify(autores), 200
+    except Exception as e:
+        return jsonify({'mensagem': str(e)}), 500
+

@@ -14,3 +14,6 @@ def atualizar(id, data):
 
 def deletar(id):
     return model.deletar(id)
+
+def listar_autores():
+    return model.listar_autores()

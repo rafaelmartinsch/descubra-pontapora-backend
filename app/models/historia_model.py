@@ -75,3 +75,12 @@ def deletar(id):
     cursor.close()
     conexao.close()
     return {"mensagem": "Notícia removida com sucesso"}
+
+def listar_autores():
+    conexao = conectar()
+    cursor = conexao.cursor(dictionary=True)
+    cursor.execute("SELECT id, nome FROM usuarios WHERE tipo IN ('A', 'E') ORDER BY nome")
+    resultado = cursor.fetchall()
+    cursor.close()
+    conexao.close()
+    return resultado
