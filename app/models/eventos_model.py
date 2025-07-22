@@ -31,26 +31,37 @@ ORDER BY
 
 from app.services.db import conectar
 
+import html
+
 def criar_evento(data):
     try:
         conexao = conectar()
         cursor = conexao.cursor(dictionary=True)
+
+        # Escape HTML to prevent XSS
+        titulo = html.escape(data.get('titulo', ''))
+        descricao = html.escape(data.get('descricao', ''))
+        local = html.escape(data.get('local', ''))
+        data_evento = data.get('data', '')
+
         sql = """
         INSERT INTO eventos (titulo, descricao, local, data)
         VALUES (%s, %s, %s, %s)
         """
-        cursor.execute(sql, (
-            data['titulo'], data['descricao'], data['local'], data['data']
-        ))
+        cursor.execute(sql, (titulo, descricao, local, data_evento))
         conexao.commit()
         evento_id = cursor.lastrowid
-        return {'id': evento_id, **data}
+
+        return {'id': evento_id, 'titulo': titulo, 'descricao': descricao, 'local': local, 'data': data_evento}
+
     except Exception as e:
         conexao.rollback()
         raise RuntimeError(f"Erro ao criar evento: {str(e)}")
+
     finally:
         cursor.close()
         conexao.close()
+
 
 def evento_existe(evento_id):
     conexao = conectar()
