@@ -73,21 +73,57 @@ def evento_existe(evento_id):
     return exists
 
 def atualizar_evento(evento_id, data):
+    conexao = None
+    cursor = None
     try:
         conexao = conectar()
         cursor = conexao.cursor(dictionary=True)
-        set_clause = ', '.join([f"{k}=%s" for k in data])
-        values = list(data.values()) + [evento_id]
-        sql = f"UPDATE eventos SET {set_clause} WHERE id = %s"
+        
+        # Allowed columns in locais table (excluding id and dt_cadastro)
+        allowed_columns = {
+            'titulo', 'grupo', 'tipo', 'categoria', 'descricao', 
+            'detalhes', 'endereco', 'hra_funcionamento', 
+            'localiza_lat', 'localiza_long', 'site', 'ativo'
+        }
+        
+        # Validate columns and build safe SET clause
+        set_parts = []
+        values = []
+        for col, val in data.items():
+            if col in allowed_columns:
+                set_parts.append(f"{col} = %s")
+                values.append(val)
+        
+        if not set_parts:
+            raise ValueError("Nenhuma coluna válida para atualização")
+        
+        # Add evento_id for WHERE clause
+        values.append(evento_id)
+        
+        # Build safe parameterized query
+        sql = f"""
+            UPDATE locais 
+            SET {', '.join(set_parts)}
+            WHERE id = %s
+        """
         cursor.execute(sql, tuple(values))
         conexao.commit()
+        
+        # Return updated data
         return {'id': evento_id, **data}
+        
     except Exception as e:
-        conexao.rollback()
+        if conexao:
+            conexao.rollback()
+        # Wrap database errors separately
+        if isinstance(e, ValueError):
+            raise
         raise RuntimeError(f"Erro ao atualizar evento: {str(e)}")
     finally:
-        cursor.close()
-        conexao.close()
+        if cursor:
+            cursor.close()
+        if conexao:
+            conexao.close()
 
 def deletar_evento(evento_id):
     try:
