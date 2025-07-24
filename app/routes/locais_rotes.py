@@ -59,9 +59,7 @@ def editar_ponto_turistico(id):
     dados = request.json
     try:
         linhas = controller.atualizar_ponto_turistico(id, dados)
-        if linhas:
-            return jsonify({'mensagem': 'Atualizado com sucesso'}), 200
-        return jsonify({'mensagem': 'Ponto turístico não encontrado'}), 404
+        return jsonify({'mensagem': 'Atualizado com sucesso'}), 200
     except Exception as e:
         return jsonify({'mensagem': str(e)}), 500
 
