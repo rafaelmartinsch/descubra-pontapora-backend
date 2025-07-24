@@ -73,57 +73,90 @@ def evento_existe(evento_id):
     return exists
 
 def atualizar_evento(evento_id, data):
+    print(f"[DEBUG] Iniciando atualização para evento ID: {evento_id}")
+    print(f"[DEBUG] Dados recebidos: {data}")
+    
     conexao = None
     cursor = None
     try:
+        print("[DEBUG] Conectando ao banco de dados...")
         conexao = conectar()
         cursor = conexao.cursor(dictionary=True)
         
-        # Allowed columns in locais table (excluding id and dt_cadastro)
+        # Atualizado: Colunas permitidas na tabela eventos (excluindo id e dt_cadastro)
         allowed_columns = {
-            'titulo', 'grupo', 'tipo', 'categoria', 'descricao', 
-            'detalhes', 'endereco', 'hra_funcionamento', 
-            'localiza_lat', 'localiza_long', 'site', 'ativo'
+            'titulo', 'descricao', 'local', 'data', 'dt_fim', 'aberto', 'site'
         }
+        print(f"[DEBUG] Colunas permitidas: {allowed_columns}")
         
-        # Validate columns and build safe SET clause
+        # Validar colunas e construir cláusula SET segura
         set_parts = []
         values = []
+        invalid_columns = []
+        
+        print("[DEBUG] Processando colunas recebidas:")
         for col, val in data.items():
             if col in allowed_columns:
-                set_parts.append(f"{col} = %s")
+                print(f"  [VALID] {col} = {val} (aceito)")
+                # Usar backticks para colunas reservadas como 'data' e 'local'
+                set_parts.append(f"`{col}` = %s")
                 values.append(val)
+            else:
+                print(f"  [INVALID] {col} (coluna não permitida)")
+                invalid_columns.append(col)
+        
+        if invalid_columns:
+            print(f"[WARN] Colunas inválidas ignoradas: {invalid_columns}")
         
         if not set_parts:
+            print("[ERROR] Nenhuma coluna válida para atualização")
             raise ValueError("Nenhuma coluna válida para atualização")
         
-        # Add evento_id for WHERE clause
+        # Adicionar evento_id para a cláusula WHERE
         values.append(evento_id)
         
-        # Build safe parameterized query
+        # Construir query parametrizada segura
         sql = f"""
-            UPDATE locais 
+            UPDATE eventos 
             SET {', '.join(set_parts)}
             WHERE id = %s
         """
-        cursor.execute(sql, tuple(values))
-        conexao.commit()
+        print("[DEBUG] Query SQL gerada:")
+        print(f"  SQL: {sql}")
+        print(f"  Valores: {values}")
         
-        # Return updated data
+        print("[DEBUG] Executando query no banco...")
+        cursor.execute(sql, tuple(values))
+        affected_rows = cursor.rowcount
+        print(f"[DEBUG] Query executada. Linhas afetadas: {affected_rows}")
+        
+        print("[DEBUG] Efetivando transação (commit)...")
+        conexao.commit()
+        print(f"[DEBUG] Commit realizado com sucesso")
+        
+        print(f"[DEBUG] Retornando resultado para ID {evento_id}")
         return {'id': evento_id, **data}
         
     except Exception as e:
+        print(f"[ERROR] Exceção ocorrida: {str(e)}")
         if conexao:
+            print("[DEBUG] Realizando rollback da transação...")
             conexao.rollback()
-        # Wrap database errors separately
+            print("[DEBUG] Rollback concluído")
+        
         if isinstance(e, ValueError):
+            print("[ERROR] Erro de validação - propagando exceção")
             raise
+        print("[ERROR] Erro de banco de dados - gerando RuntimeError")
         raise RuntimeError(f"Erro ao atualizar evento: {str(e)}")
     finally:
         if cursor:
+            print("[DEBUG] Fechando cursor")
             cursor.close()
         if conexao:
+            print("[DEBUG] Fechando conexão com banco de dados")
             conexao.close()
+        print("[DEBUG] Recursos liberados")
 
 def deletar_evento(evento_id):
     try:
