@@ -44,7 +44,7 @@ def criar(data):
     id_novo = cursor.lastrowid
     cursor.close()
     conexao.close()
-    return {"id": id_novo}
+    return id_novo
 
 def atualizar(id, data):
     conexao = conectar()
