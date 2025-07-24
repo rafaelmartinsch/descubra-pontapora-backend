@@ -1,6 +1,6 @@
 import app.models.eventos_model as model
 from flask import request
-
+import app.models.imagem_model as  img_model
 def ordenados_por_data():
     try:
         eventos = model.ordenados_por_data()
@@ -15,8 +15,10 @@ def criar_evento(data):
         if missing:
             raise ValueError(f"Campos obrigatórios faltando: {', '.join(missing)}")
 
-        novo_evento = model.criar_evento(data)
-        return novo_evento
+        id_evento = model.criar_evento(data)
+        
+        img_model.inserir_capa(data['caminho_imagem_capa'], data['legenda_imagem_capa'], 'E', id_evento)
+        return id_evento
     except Exception as e:
         raise RuntimeError(str(e))
 

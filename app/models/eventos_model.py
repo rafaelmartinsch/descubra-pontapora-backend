@@ -52,7 +52,7 @@ def criar_evento(data):
         conexao.commit()
         evento_id = cursor.lastrowid
 
-        return {'id': evento_id, 'titulo': titulo, 'descricao': descricao, 'local': local, 'data': data_evento}
+        return evento_id
 
     except Exception as e:
         conexao.rollback()
