@@ -3,3 +3,10 @@ Versão do python:
 
 Instalar dependencias:
 > pip install -r requirements.txt
+
+Criar arquivo .env
+com as variaveis:
+>MYSQL_HOST=
+>MYSQL_USER=
+>MYSQL_PASSWORD=
+>MYSQL_DATABASE=
