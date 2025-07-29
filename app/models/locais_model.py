@@ -2,12 +2,12 @@ from app.services.db import conectar
 
 def listar_top4(grupo, tipo):
     """
-    Retorna os 4 principais locais ordenados por nota ou ordem alfabética.
+    Retorna os 4 principais locais ordenados por nota ou ordem alfabética, utilizado na index do site
     Args:
         grupo (str): Código do grupo, podendo ser:
-            - 'T': Tipo T
-            - 'E': Tipo E
-        tipo (str, optional): Filtro adicional para o tipo. Pode ser None.
+            - 'T': Tipo Turistico
+            - 'E': Tipo Estabelecimentos
+        tipo (str): Filtro adicional para o tipo. Pode ser None.
     Returns:
         list: Lista com até 4 itens de destaque.
     """
