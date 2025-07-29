@@ -2,6 +2,13 @@ from app.services.db import conectar
 from datetime import datetime
 
 def listar():
+    """
+    Chama todas as histórias já registradas ao BD
+    Returns:
+        dict: Diferentes histórias são chamadas.
+    Raises:
+        None: Nenhuma foi encontrada.
+    """
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
     cursor.execute("""
@@ -16,6 +23,15 @@ def listar():
     return resultado
 
 def buscar_por_id(id):
+    """
+    Busca uma história unitariamente por vez.
+    Args:
+        id (int): Id da história individual.
+    Returns:
+        dict: Conjundo de dados da história.
+    Raises:
+        None: História não encontrada.
+    """
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
     cursor.execute("""
@@ -36,8 +52,10 @@ def criar(data):
         data (dict): Conjunto de dados para serem alterados.
     Returns:
         tuple: dados do título, conteúdo, autor e data de atualização serão criados.
-            - 
-            
+            - titulo (str): Título da história.
+            - conteudo (str): Conteúdo da história.
+            - autor (str): Admin ou Editor publicante da história.
+            - data (datetime): Data da publicação.
     """
     conexao = conectar()
     cursor = conexao.cursor()
@@ -63,10 +81,12 @@ def atualizar(id, data):
         data (dict): Conjunto de dados para serem alterados.
     Returns:
         tuple: dados do título, conteúdo, autor e data de atualização serão mudados.
-            - str: Título da história.
-            - str: Conteúdo da história.
-            - str: Autor da mudança.
-            - datetime: Data da atualização.
+            - titulo (str): Título da história.
+            - conteudo (str): Conteúdo da história.
+            - autor (str): Autor da mudança.
+            - data (datetime): Data da atualização.
+    Raises:
+        None: História não foi encontrada.
     """
     conexao = conectar()
     cursor = conexao.cursor()
@@ -95,6 +115,8 @@ def deletar(id):
         id (int): Id da história em específico
     Returns:
         None: 'Notícia removida com sucesso'
+    Raises:
+        None: Notícia não foi encontrada
     """
     conexao = conectar()
     cursor = conexao.cursor()
@@ -106,11 +128,13 @@ def deletar(id):
 
 def listar_autores():
     """
-    Retorna uma lista de administradores e editores para registrar um editar uma história.
+    Retorna uma lista de administradores e editores para registrar ou editar uma história.
         - 'A': Admin
         - 'E': Editor
     Returns:
-        list: lista de admins e editores. 
+        list: lista de admins e editores.
+    Raises:
+        None: Nenhum ou um específico não foi encontrado.
     """
     pass
     conexao = conectar()
