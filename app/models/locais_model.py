@@ -2,12 +2,12 @@ from app.services.db import conectar
 
 def listar_top4(grupo, tipo):
     """
-    Retorna os 4 principais locais ordenados por nota ou ordem alfabética.
+    Retorna os 4 principais locais ordenados por nota ou ordem alfabética, utilizado na index do site
     Args:
         grupo (str): Código do grupo, podendo ser:
-            - 'T': Tipo T
-            - 'E': Tipo E
-        tipo (str, optional): Filtro adicional para o tipo. Pode ser None.
+            - 'T': Tipo Turistico
+            - 'E': Tipo Estabelecimentos
+        tipo (str): Filtro adicional para o tipo. Pode ser None.
     Returns:
         list: Lista com até 4 itens de destaque.
     """
@@ -32,8 +32,14 @@ def listar_top4(grupo, tipo):
     conexao.close()
     return locais
 
-
 def buscar_por_id(id):
+    """
+    Retorna um local específico pelo id (int) especificado.
+    Args:
+        id (int): O id do local.
+    Returns:
+        As informações para o evento específico no tipo RowType. Pode ser serializado diretamente em json sem precisar de conversão manual.
+    """
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
     sql = """
@@ -53,6 +59,14 @@ def buscar_por_id(id):
     return local
 
 def listar_pontos_turisticos(categoria=None, subcategoria=None):
+    """
+    Retorna todos os pontos turísticos, aqueles em que o valor de 'grupo' = 'T', no banco de dados.
+    Args:
+        categoria (str, None): A categoria do local. No banco de dados está representada como 'tipo'. Opcional.
+        subcategoria (str, None): A subcategoria do local. No banco de dados está representada como 'categoria'. Opcional
+    Returns:
+        Retorna todos os pontos turísticos no tipo List[RowType]. Serializável diretamente para JSON, sem conversão manual.
+    """
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
     
@@ -87,6 +101,14 @@ def listar_pontos_turisticos(categoria=None, subcategoria=None):
     return locais
 
 def listar_estabelecimentos(categoria=None, subcategoria=None):
+    """
+    Retorna todos os estabelecimentos, aqueles em que o valor de 'grupo' = 'E', no banco de dados.
+    Args:
+        categoria (str, None): A categoria do local. No banco de dados está representada como 'tipo'. Opcional.
+        subcategoria (str, None): A subcategoria do local. No banco de dados está representada como 'categoria'. Opcional
+    Returns:
+        Retorna todos os pontos turísticos no tipo List[RowType]. Serializável diretamente para JSON, sem conversão manual.
+    """
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
     
@@ -121,6 +143,13 @@ def listar_estabelecimentos(categoria=None, subcategoria=None):
     return locais
 
 def inserir_ponto_turistico(dados):
+    """
+        Insere um ponto turístico (`tipo` (banco de dados) = 'T') na tabela locais no banco de dados. 
+    Args:
+        dados (str):  Um JSON com todas as informações do ponto turístico a serem inseridas.
+    Returns:
+        Retorna o ID do novo ponto turístico inserido.
+    """
     conexao = conectar()
     cursor = conexao.cursor()
     sql = """
@@ -140,6 +169,15 @@ def inserir_ponto_turistico(dados):
     return id_inserido
 
 def atualizar_ponto_turistico(id, dados):
+    """
+    Atualiza informação sobre o local, no banco de dados.
+        Parâmetros:
+        id (int): ID do registro
+        dados (dict): Mesma estrutura de inserir_ponto_turistico()
+    Retorno:
+        int: Número de linhas afetadas (0 ou 1)
+    """
+
     conexao = conectar()
     cursor = conexao.cursor()
     sql = """
@@ -161,6 +199,13 @@ def atualizar_ponto_turistico(id, dados):
     return linhas_afetadas
 
 def deletar_ponto_turistico(id):
+    """
+    Remove ponto turístico do banco de dados.
+    Parâmetros:
+        id (int): ID do registro
+    Retorno:
+        int: Número de linhas afetadas
+    """
     conexao = conectar()
     cursor = conexao.cursor()
     sql = "DELETE FROM locais WHERE id = %s AND grupo = 'T'"
@@ -172,6 +217,11 @@ def deletar_ponto_turistico(id):
     return linhas_afetadas
 
 def inserir_estabelecimento(dados):
+    """
+    Adiciona o novo estabelecimento no banco de dados.
+    Parâmetros :
+        dados (dict): Mesma estrutura de inserir_estabelecimento()
+    """
     conexao = conectar()
     cursor = conexao.cursor()
     sql = """
@@ -191,6 +241,14 @@ def inserir_estabelecimento(dados):
     return id_inserido
 
 def atualizar_estabelecimento(id, dados):
+    """
+    Atualiza informação do estabelecimento no banco de dados.
+        Parâmetros:
+        id (int): ID do registro
+        dados (dict): Mesma estrutura de atualizar_estabelecimento()
+    Retorno:
+        int: Número de linhas afetadas (0 ou 1)
+    """
     conexao = conectar()
     cursor = conexao.cursor()
     sql = """
@@ -212,6 +270,13 @@ def atualizar_estabelecimento(id, dados):
     return linhas_afetadas
 
 def deletar_estabelecimento(id):
+    """
+    Remove o estabelecimento do banco de dados.
+    Parâmetros:
+        id (int): ID do registro
+    Retorno:
+        int: Número de linhas afetadas
+    """
     conexao = conectar()
     cursor = conexao.cursor()
     sql = "DELETE FROM locais WHERE id = %s AND grupo = 'E'"
