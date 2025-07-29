@@ -32,8 +32,14 @@ def listar_top4(grupo, tipo):
     conexao.close()
     return locais
 
-
 def buscar_por_id(id):
+    """
+    Retorna um local específico pelo id (int) especificado.
+    Args:
+        id (int): O id do local.
+    Returns:
+        As informações para o evento específico no tipo RowType. Pode ser serializado diretamente em json sem precisar de conversão manual.
+    """
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
     sql = """
@@ -53,6 +59,14 @@ def buscar_por_id(id):
     return local
 
 def listar_pontos_turisticos(categoria=None, subcategoria=None):
+    """
+    Retorna todos os pontos turísticos, aqueles em que o valor de 'grupo' = 'T', no banco de dados.
+    Args:
+        categoria (str, None): A categoria do local. No banco de dados está representada como 'tipo'. Opcional.
+        subcategoria (str, None): A subcategoria do local. No banco de dados está representada como 'categoria'. Opcional
+    Returns:
+        Retorna todos os pontos turísticos no tipo List[RowType]. Serializável diretamente para JSON, sem conversão manual.
+    """
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
     
@@ -87,6 +101,14 @@ def listar_pontos_turisticos(categoria=None, subcategoria=None):
     return locais
 
 def listar_estabelecimentos(categoria=None, subcategoria=None):
+    """
+    Retorna todos os estabelecimentos, aqueles em que o valor de 'grupo' = 'E', no banco de dados.
+    Args:
+        categoria (str, None): A categoria do local. No banco de dados está representada como 'tipo'. Opcional.
+        subcategoria (str, None): A subcategoria do local. No banco de dados está representada como 'categoria'. Opcional
+    Returns:
+        Retorna todos os pontos turísticos no tipo List[RowType]. Serializável diretamente para JSON, sem conversão manual.
+    """
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
     
@@ -121,6 +143,13 @@ def listar_estabelecimentos(categoria=None, subcategoria=None):
     return locais
 
 def inserir_ponto_turistico(dados):
+    """
+        Insere um ponto turístico (`tipo` (banco de dados) = 'T') na tabela locais no banco de dados. 
+    Args:
+        dados (str):  Um JSON com todas as informações do ponto turístico a serem inseridas.
+    Returns:
+        Retorna o ID do novo ponto turístico inserido.
+    """
     conexao = conectar()
     cursor = conexao.cursor()
     sql = """
