@@ -90,6 +90,13 @@ def criar_ponto_turistico():
 
 @locais_bp.route('/turisticos/<int:id>', methods=['PUT'])
 def editar_ponto_turistico(id):
+    """
+    Edita o ponto turisto pelo id.
+    Returns:
+        Retorna JSON dos dados retornados pelo banco de dados, sem necessidade de serialização manual.
+    Throws:
+        Retorna no JSON as exceções que ocorrerem das funções chamadas no escopo try.
+    """
     dados = request.json
     try:
         linhas = controller.atualizar_ponto_turistico(id, dados)
@@ -99,6 +106,13 @@ def editar_ponto_turistico(id):
 
 @locais_bp.route('/turisticos/<int:id>', methods=['DELETE'])
 def excluir_ponto_turistico(id):
+    """
+    Exclui o ponto turisto pelo id.
+    Returns:
+        Retorna JSON dos dados retornados pelo banco de dados, sem necessidade de serialização manual.
+    Throws:
+        Retorna no JSON as exceções que ocorrerem das funções chamadas no escopo try.
+    """
     try:
         linhas = controller.deletar_ponto_turistico(id)
         if linhas:
@@ -109,6 +123,13 @@ def excluir_ponto_turistico(id):
 
 @locais_bp.route('/estabelecimentos', methods=['POST'])
 def criar_estabelecimento():
+    """
+    Cria o estabelecimento.
+    Returns:
+        Retorna JSON dos dados retornados pelo banco de dados, sem necessidade de serialização manual.
+    Throws:
+        Retorna no JSON as exceções que ocorrerem das funções chamadas no escopo try.
+    """
     dados = request.json
     try:
         novo_id = controller.inserir_estabelecimento(dados)
@@ -118,6 +139,13 @@ def criar_estabelecimento():
 
 @locais_bp.route('/estabelecimentos/<int:id>', methods=['PUT'])
 def editar_estabelecimento(id):
+    """
+    Edita o estabelecimento pelo id.
+    Returns:
+        Retorna JSON dos dados retornados pelo banco de dados, sem necessidade de serialização manual.
+    Throws:
+        Retorna no JSON as exceções que ocorrerem das funções chamadas no escopo try.
+    """
     dados = request.json
     try:
         linhas = controller.atualizar_estabelecimento(id, dados)
@@ -129,6 +157,13 @@ def editar_estabelecimento(id):
 
 @locais_bp.route('/estabelecimentos/<int:id>', methods=['DELETE'])
 def excluir_estabelecimento(id):
+    """
+    Exclui o estabelecimento pelo id.
+    Returns:
+        Retorna JSON dos dados retornados pelo banco de dados, sem necessidade de serialização manual.
+    Throws:
+        Retorna no JSON as exceções que ocorrerem das funções chamadas no escopo try.
+    """
     try:
         linhas = controller.deletar_estabelecimento(id)
         if linhas:

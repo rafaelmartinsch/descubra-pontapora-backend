@@ -60,16 +60,51 @@ def inserir_ponto_turistico(dados):
     return id
 
 def atualizar_ponto_turistico(id, dados):
+    """
+    Atualiza informação sobre o local, no banco de dados.
+        Parâmetros:
+        id (int): ID do registro
+        dados (dict): Mesma estrutura de inserir_ponto_turistico()
+    Retorno:
+        int: Número de linhas afetadas (0 ou 1)
+    """
     return model.atualizar_ponto_turistico(id, dados)
 
 def deletar_ponto_turistico(id):
+    """
+    Remove ponto turístico do banco de dados.
+    Parâmetros:
+        id (int): ID do registro
+    Retorno:
+        int: Número de linhas afetadas
+    """
     return model.deletar_ponto_turistico(id)
 
 def inserir_estabelecimento(dados):
+    """
+    Adiciona o novo estabelecimento no banco de dados.
+    Parâmetros :
+        dados (dict): Mesma estrutura de inserir_estabelecimento()
+    """
     return model.inserir_estabelecimento(dados)
 
 def atualizar_estabelecimento(id, dados):
+    """
+    Atualiza informação do estabelecimento no banco de dados.
+        Parâmetros:
+        id (int): ID do registro
+        dados (dict): Mesma estrutura de atualizar_estabelecimento()
+    Retorno:
+        int: Número de linhas afetadas (0 ou 1)
+    """
     return model.atualizar_estabelecimento(id, dados)
 
 def deletar_estabelecimento(id):
+    """
+    Remove o estabelecimento do banco de dados.
+    Parâmetros:
+        id (int): ID do registro
+    Retorno:
+        int: Número de linhas afetadas
+    """
     return model.deletar_estabelecimento(id)

@@ -169,6 +169,15 @@ def inserir_ponto_turistico(dados):
     return id_inserido
 
 def atualizar_ponto_turistico(id, dados):
+    """
+    Atualiza informação sobre o local, no banco de dados.
+        Parâmetros:
+        id (int): ID do registro
+        dados (dict): Mesma estrutura de inserir_ponto_turistico()
+    Retorno:
+        int: Número de linhas afetadas (0 ou 1)
+    """
+
     conexao = conectar()
     cursor = conexao.cursor()
     sql = """
@@ -190,6 +199,13 @@ def atualizar_ponto_turistico(id, dados):
     return linhas_afetadas
 
 def deletar_ponto_turistico(id):
+    """
+    Remove ponto turístico do banco de dados.
+    Parâmetros:
+        id (int): ID do registro
+    Retorno:
+        int: Número de linhas afetadas
+    """
     conexao = conectar()
     cursor = conexao.cursor()
     sql = "DELETE FROM locais WHERE id = %s AND grupo = 'T'"
@@ -201,6 +217,11 @@ def deletar_ponto_turistico(id):
     return linhas_afetadas
 
 def inserir_estabelecimento(dados):
+    """
+    Adiciona o novo estabelecimento no banco de dados.
+    Parâmetros :
+        dados (dict): Mesma estrutura de inserir_estabelecimento()
+    """
     conexao = conectar()
     cursor = conexao.cursor()
     sql = """
@@ -220,6 +241,14 @@ def inserir_estabelecimento(dados):
     return id_inserido
 
 def atualizar_estabelecimento(id, dados):
+    """
+    Atualiza informação do estabelecimento no banco de dados.
+        Parâmetros:
+        id (int): ID do registro
+        dados (dict): Mesma estrutura de atualizar_estabelecimento()
+    Retorno:
+        int: Número de linhas afetadas (0 ou 1)
+    """
     conexao = conectar()
     cursor = conexao.cursor()
     sql = """
@@ -241,6 +270,13 @@ def atualizar_estabelecimento(id, dados):
     return linhas_afetadas
 
 def deletar_estabelecimento(id):
+    """
+    Remove o estabelecimento do banco de dados.
+    Parâmetros:
+        id (int): ID do registro
+    Retorno:
+        int: Número de linhas afetadas
+    """
     conexao = conectar()
     cursor = conexao.cursor()
     sql = "DELETE FROM locais WHERE id = %s AND grupo = 'E'"
