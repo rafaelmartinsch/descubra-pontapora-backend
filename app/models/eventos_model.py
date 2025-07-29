@@ -1,6 +1,13 @@
 from app.services.db import conectar
 
 def ordenados_por_data():
+    """
+    Retorna todos os eventos ordenados pela data em ordem crescente, incluindo a imagem de capa.
+    
+    Returns:
+        list: Lista de dicionários, onde cada dicionário representa um evento
+              com seus detalhes e o caminho da imagem de capa.
+    """
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
     sql = """
@@ -34,6 +41,19 @@ from app.services.db import conectar
 import html
 
 def criar_evento(data):
+    """
+    Insere um novo evento no banco de dados com os dados fornecidos.
+
+    Args:
+        data (dict): Um dicionário contendo os dados do evento, incluindo 'titulo',
+                     'descricao', 'local' e 'data'.
+
+    Returns:
+        int: O ID do evento recém-criado.
+
+    Raises:
+        RuntimeError: Se ocorrer um erro durante a criação do evento.
+    """
     try:
         conexao = conectar()
         cursor = conexao.cursor(dictionary=True)
@@ -64,6 +84,15 @@ def criar_evento(data):
 
 
 def evento_existe(evento_id):
+    """
+    Verifica se um evento com o ID fornecido existe no banco de dados.
+
+    Args:
+        evento_id (int): O ID do evento a ser verificado.
+
+    Returns:
+        bool: True se o evento existir, False caso contrário.
+    """
     conexao = conectar()
     cursor = conexao.cursor()
     cursor.execute("SELECT 1 FROM eventos WHERE id = %s", (evento_id,))
@@ -73,6 +102,20 @@ def evento_existe(evento_id):
     return exists
 
 def atualizar_evento(evento_id, data):
+    """
+    Atualiza os dados de um evento existente no banco de dados.
+
+    Args:
+        evento_id (int): O ID do evento a ser atualizado.
+        data (dict): Um dicionário contendo os campos e novos valores a serem atualizados.
+
+    Returns:
+        dict: Um dicionário com o ID do evento e os dados que foram atualizados.
+
+    Raises:
+        ValueError: Se nenhuma coluna válida para atualização for fornecida.
+        RuntimeError: Se ocorrer um erro durante a atualização do evento.
+    """
     print(f"[DEBUG] Iniciando atualização para evento ID: {evento_id}")
     print(f"[DEBUG] Dados recebidos: {data}")
     
@@ -159,6 +202,18 @@ def atualizar_evento(evento_id, data):
         print("[DEBUG] Recursos liberados")
 
 def deletar_evento(evento_id):
+    """
+    Deleta um evento do banco de dados com base no ID fornecido.
+
+    Args:
+        evento_id (int): O ID do evento a ser deletado.
+
+    Returns:
+        bool: True se o evento foi deletado com sucesso, False caso contrário.
+
+    Raises:
+        RuntimeError: Se ocorrer um erro durante a exclusão do evento.
+    """
     try:
         conexao = conectar()
         cursor = conexao.cursor()
