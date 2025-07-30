@@ -6,8 +6,6 @@ def listar():
     Chama todas as histórias já registradas ao BD
     Returns:
         dict: Diferentes histórias são chamadas.
-    Raises:
-        None: Nenhuma foi encontrada.
     """
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
@@ -29,8 +27,6 @@ def buscar_por_id(id):
         id (int): Id da história individual.
     Returns:
         dict: Conjundo de dados da história.
-    Raises:
-        None: História não encontrada.
     """
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
@@ -51,7 +47,7 @@ def criar(data):
     Args:
         data (dict): Conjunto de dados para serem alterados.
     Returns:
-        tuple: dados do título, conteúdo, autor e data de atualização serão criados.
+        dict: dados do título, conteúdo, autor e data de atualização serão criados.
             - titulo (str): Título da história.
             - conteudo (str): Conteúdo da história.
             - autor (str): Admin ou Editor publicante da história.
@@ -80,13 +76,11 @@ def atualizar(id, data):
         id (int): ID da história em específico.
         data (dict): Conjunto de dados para serem alterados.
     Returns:
-        tuple: dados do título, conteúdo, autor e data de atualização serão mudados.
+        dict: dados do título, conteúdo, autor e data de atualização serão mudados.
             - titulo (str): Título da história.
             - conteudo (str): Conteúdo da história.
             - autor (str): Autor da mudança.
             - data (datetime): Data da atualização.
-    Raises:
-        None: História não foi encontrada.
     """
     conexao = conectar()
     cursor = conexao.cursor()
@@ -115,8 +109,6 @@ def deletar(id):
         id (int): Id da história em específico
     Returns:
         None: 'Notícia removida com sucesso'
-    Raises:
-        None: Notícia não foi encontrada
     """
     conexao = conectar()
     cursor = conexao.cursor()
@@ -133,8 +125,6 @@ def listar_autores():
         - 'E': Editor
     Returns:
         list: lista de admins e editores.
-    Raises:
-        None: Nenhum ou um específico não foi encontrado.
     """
     pass
     conexao = conectar()
