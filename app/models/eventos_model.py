@@ -46,7 +46,7 @@ def criar_evento(data):
 
     Args:
         data (dict): Um dicionário contendo os dados do evento, incluindo 'titulo',
-                     'descricao', 'local' e 'data'.
+                     'descricao', 'local', 'data' e 'status'.
 
     Returns:
         int: O ID do evento recém-criado.
