@@ -252,15 +252,25 @@ def atualizar_estabelecimento(id, dados):
     conexao = conectar()
     cursor = conexao.cursor()
     sql = """
-        UPDATE locais 
-        SET titulo = %s, descricao = %s, tipo = %s, categoria = %s
+         UPDATE locais 
+        SET 
+            titulo = %s, 
+            descricao = %s, 
+            tipo = %s, 
+            categoria = %s,
+            endereco = %s,
+            hra_funcionamento = %s,
+            site = %s
         WHERE id = %s AND grupo = 'E'
     """
     cursor.execute(sql, (
         dados.get('titulo'),
         dados.get('descricao'),
         dados.get('tipo'),
-        dados.get('categoria'),
+        dados.get('subcategoria'),     
+        dados.get('endereco'),
+        dados.get('hra_funcionamento'),
+        dados.get('site'),
         id
     ))
     conexao.commit()
