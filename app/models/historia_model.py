@@ -60,7 +60,7 @@ def criar(data):
         data['titulo'],
         data['conteudo'],
         data['autor'],
-        data.get('data', datetime.now().date())  # se não enviar, usa hoje
+        data.get('data', datetime.now())
     )
     cursor.execute(sql, valores)
     conexao.commit()
@@ -93,7 +93,7 @@ def atualizar(id, data):
         data['titulo'],
         data['conteudo'],
         data['autor'],
-        data.get('dt_cadastro', datetime.now().date()),
+        data.get('dt_cadastro', datetime.now()),
         id
     )
     cursor.execute(sql, valores)
