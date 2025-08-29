@@ -1,11 +1,10 @@
 from flask import Blueprint, jsonify, request
-
 import app.controllers.eventos_controllers as controller
 
 eventos_bp = Blueprint('eventos', __name__, url_prefix='/eventos')
 
 @eventos_bp.route('/', methods=['GET'])
-def ordenados_por_data():
+def listar_eventos():
     try:
         eventos = controller.ordenados_por_data()
         return jsonify(eventos), 200
@@ -21,6 +20,8 @@ def criar_evento():
 
         novo_evento = controller.criar_evento(data)
         return jsonify(novo_evento), 201
+    except ValueError as e:
+        return jsonify({'mensagem': str(e)}), 400
     except Exception as e:
         return jsonify({'mensagem': str(e)}), 500
 
@@ -36,6 +37,8 @@ def atualizar_evento(evento_id):
             return jsonify({'mensagem': 'Evento não encontrado'}), 404
             
         return jsonify(evento_atualizado), 200
+    except ValueError as e:
+        return jsonify({'mensagem': str(e)}), 400
     except Exception as e:
         return jsonify({'mensagem': str(e)}), 500
 
