@@ -2,35 +2,58 @@ from app.services.db import conectar
 
 def listar_top4(grupo, tipo):
     """
-    Retorna os 4 principais locais ordenados por nota ou ordem alfabética, utilizado na index do site
+    Retorna os 4 principais locais ordenados por nota ou ordem alfabética.
+    A busca é filtrada pelos parâmetros opcionais.
     Args:
-        grupo (str): Código do grupo, podendo ser:
-            - 'T': Tipo Turistico
-            - 'E': Tipo Estabelecimentos
-        tipo (str): Filtro adicional para o tipo. Pode ser None.
+        grupo (str, optional): Código do grupo ('T' para Turístico, 'E' para Estabelecimento).
+        tipo (str, optional): Filtro adicional para o tipo do local (ex: 'Praia', 'Restaurante').
     Returns:
         list: Lista com até 4 itens de destaque.
     """
-    pass
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
+
+    # Query base
     sql = """
-        SELECT locais.id, titulo, locais.tipo, img.caminho AS capa, descricao, AVG(nota) AS nota  
+        SELECT locais.id, titulo, locais.tipo, img.caminho AS capa, descricao, AVG(nota) AS nota
         FROM locais
         LEFT JOIN avaliacoes ON locais.id = local_id
-        LEFT JOIN imagens img ON img.tipo_origem = 'L' 
-            AND img.origem_id = locais.id 
+        LEFT JOIN imagens img ON img.tipo_origem = 'L'
+            AND img.origem_id = locais.id
             AND img.capa = 1
-        WHERE locais.grupo = %s  AND locais.tipo LIKE %s
+    """
+
+    # Listas para armazenar as condições e os parâmetros da query
+    conditions = []
+    params = []
+
+    # Adiciona a condição para 'grupo' se ele for fornecido
+    if grupo:
+        conditions.append("locais.grupo = %s")
+        params.append(grupo)
+
+    # Adiciona a condição para 'tipo' se ele for fornecido
+    if tipo:
+        conditions.append("locais.tipo LIKE %s")
+        params.append(f"%{tipo}%")
+
+    # Monta a cláusula WHERE se houver condições
+    if conditions:
+        sql += " WHERE " + " AND ".join(conditions)
+
+    # Adiciona o restante da query
+    sql += """
         GROUP BY locais.id, titulo, locais.tipo, descricao, img.caminho
         ORDER BY nota DESC, titulo DESC
         LIMIT 4
     """
-    cursor.execute(sql, (grupo, '%'+tipo+'%'))
+
+    cursor.execute(sql, tuple(params))
     locais = cursor.fetchall()
     cursor.close()
     conexao.close()
     return locais
+
 
 def buscar_por_id(id):
     """
