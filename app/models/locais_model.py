@@ -153,20 +153,25 @@ def inserir_ponto_turistico(dados):
     conexao = conectar()
     cursor = conexao.cursor()
     sql = """
-        INSERT INTO locais (titulo, descricao, tipo, categoria, grupo)
-        VALUES (%s, %s, %s, %s, 'T')
+        INSERT INTO locais 
+            (titulo, descricao, tipo, categoria, endereco, hra_funcionamento, detalhes, grupo)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, 'T')
     """
     cursor.execute(sql, (
         dados.get('titulo'),
         dados.get('descricao'),
         dados.get('tipo'),
-        dados.get('categoria')
+        dados.get('categoria'),
+        dados.get('endereco'),
+        dados.get('hra_funcionamento'),
+        dados.get('detalhes')
     ))
     conexao.commit()
     id_inserido = cursor.lastrowid
     cursor.close()
     conexao.close()
     return id_inserido
+
 
 def atualizar_ponto_turistico(id, dados):
     """
@@ -182,7 +187,14 @@ def atualizar_ponto_turistico(id, dados):
     cursor = conexao.cursor()
     sql = """
         UPDATE locais 
-        SET titulo = %s, descricao = %s, tipo = %s, categoria = %s
+        SET 
+            titulo = %s, 
+            descricao = %s, 
+            tipo = %s, 
+            categoria = %s,
+            endereco = %s,
+            hra_funcionamento = %s,
+            detalhes = %s
         WHERE id = %s AND grupo = 'T'
     """
     cursor.execute(sql, (
@@ -190,6 +202,9 @@ def atualizar_ponto_turistico(id, dados):
         dados.get('descricao'),
         dados.get('tipo'),
         dados.get('categoria'),
+        dados.get('endereco'),
+        dados.get('hra_funcionamento'),
+        dados.get('detalhes'),
         id
     ))
     conexao.commit()
@@ -267,7 +282,7 @@ def atualizar_estabelecimento(id, dados):
         dados.get('titulo'),
         dados.get('descricao'),
         dados.get('tipo'),
-        dados.get('subcategoria'),     
+        dados.get('categoria'),     
         dados.get('endereco'),
         dados.get('hra_funcionamento'),
         dados.get('site'),
