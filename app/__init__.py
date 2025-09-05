@@ -7,7 +7,13 @@ def start_app():
     app = Flask(__name__)
     
     app.config.from_object(Config)
-    CORS(app, origins=['http://45.182.18.133:5500', 'https://45.182.18.133:5500', 'http://127.0.0.1:5500', 'http://descubrapontapora.com.br:5500', 'https://descubrapontapora.com.br:5500'])#app.config["CORS_ORIGIN"])
+    CORS(app, origins=[
+        "http://45.182.18.133:*",
+        "https://45.182.18.133:*",
+        "http://descubrapontapora.com.br:*",
+        "https://descubrapontapora.com.br:*",
+        "http://127.0.0.1:*"
+    ])
     iniciar_rotas(app)
     
     return app
