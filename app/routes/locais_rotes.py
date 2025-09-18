@@ -82,6 +82,11 @@ def criar_ponto_turistico():
     """
 
     dados = request.json
+    
+    # Validação do campo descrição
+    if dados.get('descricao') and len(dados.get('descricao')) > 200:
+        return jsonify({'mensagem': 'O campo descrição não pode exceder 200 caracteres.'}), 400
+
     try:
         novo_id = controller.inserir_ponto_turistico(dados)
         return jsonify({'id': novo_id}), 201
@@ -98,9 +103,16 @@ def editar_ponto_turistico(id):
         Retorna no JSON as exceções que ocorrerem das funções chamadas no escopo try.
     """
     dados = request.json
+    
+    # Validação do campo descrição
+    if dados.get('descricao') and len(dados.get('descricao')) > 200:
+        return jsonify({'mensagem': 'O campo descrição não pode exceder 200 caracteres.'}), 400
+        
     try:
         linhas = controller.atualizar_ponto_turistico(id, dados)
-        return jsonify({'mensagem': 'Atualizado com sucesso'}), 200
+        if linhas:
+            return jsonify({'mensagem': 'Atualizado com sucesso'}), 200
+        return jsonify({'mensagem': 'Ponto turístico não encontrado'}), 404
     except Exception as e:
         return jsonify({'mensagem': str(e)}), 500
 
