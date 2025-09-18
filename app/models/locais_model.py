@@ -73,7 +73,7 @@ def buscar_por_id(id):
             AND img.origem_id = locais.id 
             AND img.capa = 1
         WHERE locais.id = %s
-        GROUP BY titulo, descricao, tipo, img.caminho
+        GROUP BY locais.id
     """
     cursor.execute(sql, (id,))
     local = cursor.fetchone()
@@ -94,11 +94,10 @@ def listar_pontos_turisticos(categoria=None, subcategoria=None):
     cursor = conexao.cursor(dictionary=True)
     
     sql = """
-        SELECT locais.*, AVG(nota) AS nota, img.caminho AS capa
+        SELECT locais.*, AVG(avaliacoes.nota) AS nota, img.caminho AS capa
         FROM locais
-        LEFT JOIN avaliacoes ON locais.id = local_id
-        LEFT JOIN imagens img ON img.tipo_origem = 'L' 
-            AND img.origem_id = locais.id 
+        LEFT JOIN avaliacoes ON locais.id = avaliacoes.local_id
+        LEFT JOIN imagens img ON img.tipo_origem = 'L' AND img.origem_id = locais.id AND img.capa = 1
         WHERE locais.grupo = 'T'
     """
     
@@ -114,7 +113,7 @@ def listar_pontos_turisticos(categoria=None, subcategoria=None):
     
     sql += """
         GROUP BY locais.id
-        ORDER BY nota DESC, titulo DESC
+        ORDER BY locais.titulo ASC
     """
     
     cursor.execute(sql, params)
@@ -167,23 +166,31 @@ def listar_estabelecimentos(categoria=None, subcategoria=None):
 
 def inserir_ponto_turistico(dados):
     """
-        Insere um ponto turístico (`tipo` (banco de dados) = 'T') na tabela locais no banco de dados. 
+        Insere um ponto turístico (`grupo` = 'T') na tabela locais no banco de dados. 
     Args:
-        dados (str):  Um JSON com todas as informações do ponto turístico a serem inseridas.
+        dados (dict):  Um dicionário com todas as informações do ponto turístico a serem inseridas.
     Returns:
         Retorna o ID do novo ponto turístico inserido.
     """
     conexao = conectar()
     cursor = conexao.cursor()
     sql = """
-        INSERT INTO locais (titulo, descricao, tipo, categoria, grupo)
-        VALUES (%s, %s, %s, %s, 'T')
+        INSERT INTO locais (
+            titulo, descricao, detalhes, tipo, categoria, endereco, 
+            localiza_long, localiza_lat, hra_funcionamento, grupo
+        )
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 'T')
     """
     cursor.execute(sql, (
         dados.get('titulo'),
         dados.get('descricao'),
+        dados.get('detalhes'),
         dados.get('tipo'),
-        dados.get('categoria')
+        dados.get('categoria'),
+        dados.get('endereco'),
+        dados.get('localiza_long'),
+        dados.get('localiza_lat'),
+        dados.get('hra_funcionamento')
     ))
     conexao.commit()
     id_inserido = cursor.lastrowid
@@ -205,14 +212,21 @@ def atualizar_ponto_turistico(id, dados):
     cursor = conexao.cursor()
     sql = """
         UPDATE locais 
-        SET titulo = %s, descricao = %s, tipo = %s, categoria = %s
+        SET 
+            titulo = %s, descricao = %s, detalhes = %s, tipo = %s, categoria = %s, 
+            endereco = %s, localiza_long = %s, localiza_lat = %s, hra_funcionamento = %s
         WHERE id = %s AND grupo = 'T'
     """
     cursor.execute(sql, (
         dados.get('titulo'),
         dados.get('descricao'),
+        dados.get('detalhes'),
         dados.get('tipo'),
         dados.get('categoria'),
+        dados.get('endereco'),
+        dados.get('localiza_long'),
+        dados.get('localiza_lat'),
+        dados.get('hra_funcionamento'),
         id
     ))
     conexao.commit()
@@ -290,7 +304,7 @@ def atualizar_estabelecimento(id, dados):
         dados.get('titulo'),
         dados.get('descricao'),
         dados.get('tipo'),
-        dados.get('subcategoria'),     
+        dados.get('categoria'),     
         dados.get('endereco'),
         dados.get('hra_funcionamento'),
         dados.get('site'),
@@ -319,3 +333,4 @@ def deletar_estabelecimento(id):
     cursor.close()
     conexao.close()
     return linhas_afetadas
+
