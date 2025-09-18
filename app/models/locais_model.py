@@ -2,7 +2,7 @@ from app.services.db import conectar
 
 def listar_top4(grupo, tipo):
     """
-    Retorna os 4 principais locais ordenados por nota ou ordem alfabética.
+    Retorna os 4 principais locais ordenados por ordem alfabética.
     A busca é filtrada pelos parâmetros opcionais.
     Args:
         grupo (str, optional): Código do grupo ('T' para Turístico, 'E' para Estabelecimento).
@@ -13,38 +13,31 @@ def listar_top4(grupo, tipo):
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
 
-    # Query base
     sql = """
-        SELECT locais.id, titulo, locais.tipo, img.caminho AS capa, descricao, AVG(nota) AS nota
+        SELECT locais.id, titulo, locais.tipo, img.caminho AS capa, descricao
         FROM locais
-        LEFT JOIN avaliacoes ON locais.id = local_id
         LEFT JOIN imagens img ON img.tipo_origem = 'L'
             AND img.origem_id = locais.id
             AND img.capa = 1
     """
 
-    # Listas para armazenar as condições e os parâmetros da query
     conditions = []
     params = []
 
-    # Adiciona a condição para 'grupo' se ele for fornecido
     if grupo:
         conditions.append("locais.grupo = %s")
         params.append(grupo)
 
-    # Adiciona a condição para 'tipo' se ele for fornecido
     if tipo:
         conditions.append("locais.tipo LIKE %s")
         params.append(f"%{tipo}%")
 
-    # Monta a cláusula WHERE se houver condições
     if conditions:
         sql += " WHERE " + " AND ".join(conditions)
 
-    # Adiciona o restante da query
     sql += """
         GROUP BY locais.id, titulo, locais.tipo, descricao, img.caminho
-        ORDER BY nota DESC, titulo DESC
+        ORDER BY titulo DESC
         LIMIT 4
     """
 
@@ -61,14 +54,13 @@ def buscar_por_id(id):
     Args:
         id (int): O id do local.
     Returns:
-        As informações para o evento específico no tipo RowType. Pode ser serializado diretamente em json sem precisar de conversão manual.
+        As informações para o evento específico no tipo RowType.
     """
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
     sql = """
-        SELECT locais.* , AVG(nota) AS nota, img.caminho AS capa
+        SELECT locais.*, img.caminho AS capa
         FROM locais
-        LEFT JOIN avaliacoes ON locais.id = local_id
         LEFT JOIN imagens img ON img.tipo_origem = 'L' 
             AND img.origem_id = locais.id 
             AND img.capa = 1
@@ -83,20 +75,19 @@ def buscar_por_id(id):
 
 def listar_pontos_turisticos(categoria=None, subcategoria=None):
     """
-    Retorna todos os pontos turísticos, aqueles em que o valor de 'grupo' = 'T', no banco de dados.
+    Retorna todos os pontos turísticos.
     Args:
-        categoria (str, None): A categoria do local. No banco de dados está representada como 'tipo'. Opcional.
-        subcategoria (str, None): A subcategoria do local. No banco de dados está representada como 'categoria'. Opcional
+        categoria (str, None): A categoria do local (tipo). Opcional.
+        subcategoria (str, None): A subcategoria do local (categoria). Opcional
     Returns:
-        Retorna todos os pontos turísticos no tipo List[RowType]. Serializável diretamente para JSON, sem conversão manual.
+        Retorna todos os pontos turísticos.
     """
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
     
     sql = """
-        SELECT locais.*, AVG(avaliacoes.nota) AS nota, img.caminho AS capa
+        SELECT locais.*, img.caminho AS capa
         FROM locais
-        LEFT JOIN avaliacoes ON locais.id = avaliacoes.local_id
         LEFT JOIN imagens img ON img.tipo_origem = 'L' AND img.origem_id = locais.id AND img.capa = 1
         WHERE locais.grupo = 'T'
     """
@@ -124,20 +115,19 @@ def listar_pontos_turisticos(categoria=None, subcategoria=None):
 
 def listar_estabelecimentos(categoria=None, subcategoria=None):
     """
-    Retorna todos os estabelecimentos, aqueles em que o valor de 'grupo' = 'E', no banco de dados.
+    Retorna todos os estabelecimentos.
     Args:
-        categoria (str, None): A categoria do local. No banco de dados está representada como 'tipo'. Opcional.
-        subcategoria (str, None): A subcategoria do local. No banco de dados está representada como 'categoria'. Opcional
+        categoria (str, None): A categoria do local (tipo). Opcional.
+        subcategoria (str, None): A subcategoria do local (categoria). Opcional
     Returns:
-        Retorna todos os pontos turísticos no tipo List[RowType]. Serializável diretamente para JSON, sem conversão manual.
+        Retorna todos os estabelecimentos.
     """
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
     
     sql = """
-        SELECT locais.*, AVG(nota) AS nota, img.caminho AS capa
+        SELECT locais.*, img.caminho AS capa
         FROM locais
-        LEFT JOIN avaliacoes ON locais.id = local_id
         LEFT JOIN imagens img ON img.tipo_origem = 'L' 
             AND img.origem_id = locais.id 
         WHERE locais.grupo = 'E' 
@@ -155,7 +145,7 @@ def listar_estabelecimentos(categoria=None, subcategoria=None):
     
     sql += """
         GROUP BY locais.id
-        ORDER BY nota DESC, titulo DESC
+        ORDER BY titulo DESC
     """
     
     cursor.execute(sql, params)
@@ -166,17 +156,19 @@ def listar_estabelecimentos(categoria=None, subcategoria=None):
 
 def inserir_ponto_turistico(dados):
     """
-        Insere um ponto turístico (`grupo` = 'T') na tabela locais no banco de dados. 
+    Insere um ponto turístico na tabela locais.
     Args:
-        dados (dict):  Um dicionário com todas as informações do ponto turístico a serem inseridas.
+        dados (dict): Dicionário com as informações do ponto turístico.
     Returns:
-        Retorna o ID do novo ponto turístico inserido.
+        O ID do novo ponto turístico inserido.
     """
     conexao = conectar()
     cursor = conexao.cursor()
     sql = """
-        INSERT INTO locais 
-            (titulo, descricao, tipo, categoria, endereco, hra_funcionamento, detalhes, localiza_lat, localiza_long, grupo)
+        INSERT INTO locais (
+            titulo, descricao, detalhes, tipo, categoria, endereco, 
+            localiza_long, localiza_lat, hra_funcionamento, grupo
+        )
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 'T')
     """
     cursor.execute(sql, (
@@ -186,10 +178,9 @@ def inserir_ponto_turistico(dados):
         dados.get('tipo'),
         dados.get('categoria'),
         dados.get('endereco'),
-        dados.get('hra_funcionamento'),
-        dados.get('detalhes'),
+        dados.get('localiza_long'),
         dados.get('localiza_lat'),
-        dados.get('localiza_long')
+        dados.get('hra_funcionamento')
     ))
     conexao.commit()
     id_inserido = cursor.lastrowid
@@ -197,31 +188,22 @@ def inserir_ponto_turistico(dados):
     conexao.close()
     return id_inserido
 
-
 def atualizar_ponto_turistico(id, dados):
     """
-    Atualiza informação sobre o local, no banco de dados.
-        Parâmetros:
-        id (int): ID do registro
-        dados (dict): Mesma estrutura de inserir_ponto_turistico()
-    Retorno:
-        int: Número de linhas afetadas (0 ou 1)
+    Atualiza informação sobre o local no banco de dados.
+    Args:
+        id (int): ID do registro.
+        dados (dict): Dicionário com os dados a serem atualizados.
+    Returns:
+        int: Número de linhas afetadas.
     """
-
     conexao = conectar()
     cursor = conexao.cursor()
     sql = """
         UPDATE locais 
         SET 
-            titulo = %s, 
-            descricao = %s, 
-            tipo = %s, 
-            categoria = %s,
-            endereco = %s,
-            hra_funcionamento = %s,
-            detalhes = %s,
-            localiza_lat = %s,
-            localiza_long = %s
+            titulo = %s, descricao = %s, detalhes = %s, tipo = %s, categoria = %s, 
+            endereco = %s, localiza_long = %s, localiza_lat = %s, hra_funcionamento = %s
         WHERE id = %s AND grupo = 'T'
     """
     cursor.execute(sql, (
@@ -231,10 +213,9 @@ def atualizar_ponto_turistico(id, dados):
         dados.get('tipo'),
         dados.get('categoria'),
         dados.get('endereco'),
-        dados.get('hra_funcionamento'),
-        dados.get('detalhes'),
-        dados.get('localiza_lat'),
         dados.get('localiza_long'),
+        dados.get('localiza_lat'),
+        dados.get('hra_funcionamento'),
         id
     ))
     conexao.commit()
@@ -246,10 +227,10 @@ def atualizar_ponto_turistico(id, dados):
 def deletar_ponto_turistico(id):
     """
     Remove ponto turístico do banco de dados.
-    Parâmetros:
-        id (int): ID do registro
-    Retorno:
-        int: Número de linhas afetadas
+    Args:
+        id (int): ID do registro.
+    Returns:
+        int: Número de linhas afetadas.
     """
     conexao = conectar()
     cursor = conexao.cursor()
@@ -264,26 +245,20 @@ def deletar_ponto_turistico(id):
 def inserir_estabelecimento(dados):
     """
     Adiciona o novo estabelecimento no banco de dados.
-    Parâmetros :
-        dados (dict): Mesma estrutura de inserir_estabelecimento()
+    Args:
+        dados (dict): Dicionário com os dados do estabelecimento.
     """
     conexao = conectar()
     cursor = conexao.cursor()
     sql = """
-        INSERT INTO locais 
-            (titulo, descricao, tipo, categoria, endereco, hra_funcionamento, site, localiza_lat, localiza_long, grupo)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 'E')
+        INSERT INTO locais (titulo, descricao, tipo, categoria, grupo)
+        VALUES (%s, %s, %s, %s, 'E')
     """
     cursor.execute(sql, (
         dados.get('titulo'),
         dados.get('descricao'),
         dados.get('tipo'),
-        dados.get('categoria'),
-        dados.get('endereco'),
-        dados.get('hra_funcionamento'),
-        dados.get('site'),
-        dados.get('localiza_lat'),
-        dados.get('localiza_long')
+        dados.get('categoria')
     ))
     conexao.commit()
     id_inserido = cursor.lastrowid
@@ -291,15 +266,14 @@ def inserir_estabelecimento(dados):
     conexao.close()
     return id_inserido
 
-
 def atualizar_estabelecimento(id, dados):
     """
     Atualiza informação do estabelecimento no banco de dados.
-        Parâmetros:
-        id (int): ID do registro
-        dados (dict): Mesma estrutura de atualizar_estabelecimento()
-    Retorno:
-        int: Número de linhas afetadas (0 ou 1)
+    Args:
+        id (int): ID do registro.
+        dados (dict): Dicionário com os dados a serem atualizados.
+    Returns:
+        int: Número de linhas afetadas.
     """
     conexao = conectar()
     cursor = conexao.cursor()
@@ -312,9 +286,7 @@ def atualizar_estabelecimento(id, dados):
             categoria = %s,
             endereco = %s,
             hra_funcionamento = %s,
-            site = %s,
-            localiza_lat = %s,
-            localiza_long = %s
+            site = %s
         WHERE id = %s AND grupo = 'E'
     """
     cursor.execute(sql, (
@@ -325,8 +297,6 @@ def atualizar_estabelecimento(id, dados):
         dados.get('endereco'),
         dados.get('hra_funcionamento'),
         dados.get('site'),
-        dados.get('localiza_lat'),
-        dados.get('localiza_long'),
         id
     ))
     conexao.commit()
@@ -335,14 +305,13 @@ def atualizar_estabelecimento(id, dados):
     conexao.close()
     return linhas_afetadas
 
-
 def deletar_estabelecimento(id):
     """
     Remove o estabelecimento do banco de dados.
-    Parâmetros:
-        id (int): ID do registro
-    Retorno:
-        int: Número de linhas afetadas
+    Args:
+        id (int): ID do registro.
+    Returns:
+        int: Número de linhas afetadas.
     """
     conexao = conectar()
     cursor = conexao.cursor()
