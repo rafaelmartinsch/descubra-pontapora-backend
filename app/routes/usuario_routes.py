@@ -1,4 +1,6 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, current_app as app
+import jwt
+import datetime
 import app.controllers.usuario_controller as controller
 
 usuario_bp=Blueprint('usuarios', __name__, url_prefix='/usuarios')
@@ -44,5 +46,30 @@ def deletar(id):
     try:
         controller.deletar(id)
         return jsonify({'id': id, 'mensagem':'Usuário excluído com sucesso'}), 200
+    except Exception as e:
+        return jsonify({'mensagem': str(e)}), 500
+    
+
+@usuario_bp.route("/login", methods=["POST"])
+def login():
+    dados = request.json
+    login = dados.get("login")
+    senha = dados.get("senha")
+    try:
+        if (usuario := controller.login(login, senha)):
+            token = jwt.encode(
+                {
+                    "id": usuario['id'],
+                    "nome": usuario['nome'],
+                    "email": usuario['email'],
+                    "tipo": usuario['tipo'],
+                    "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=5)  # expira em 5h
+                },
+                app.config['SECRET_KEY'],
+                algorithm="HS256"
+            )
+            return jsonify({"token": token})
+        else:
+            return jsonify({"erro": "Credenciais inválidas"}), 401
     except Exception as e:
         return jsonify({'mensagem': str(e)}), 500

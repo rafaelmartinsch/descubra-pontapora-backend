@@ -21,3 +21,8 @@ def atualizar(dados):
 
 def deletar(id):
     return model.deletar(id)
+
+def login(login, senha):
+    hash = hashlib.sha256(senha.encode()).hexdigest() 
+    return model.login(login, hash) 
+

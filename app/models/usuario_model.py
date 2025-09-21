@@ -59,3 +59,14 @@ def deletar(id):
     cursor.close()
     conexao.close()
     return
+
+
+def login(login, hash):
+    conexao = conectar()
+    cursor = conexao.cursor(dictionary=True)
+    sql =  "SELECT id, nome, email, tipo FROM usuarios WHERE email=%s AND senha=%s"
+    cursor.execute(sql, (login, hash))
+    usuario = cursor.fetchone()
+    cursor.close()
+    conexao.close()
+    return usuario
