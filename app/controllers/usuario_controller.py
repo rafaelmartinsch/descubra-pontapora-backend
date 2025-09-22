@@ -24,5 +24,14 @@ def deletar(id):
 
 def login(login, senha):
     hash = hashlib.sha256(senha.encode()).hexdigest() 
-    return model.login(login, hash) 
+    TIPO_MAP = {
+        "A": "admin",
+        "E": "editor",
+        "V": "viewer"
+    }
+
+    dados = model.login(login, hash) 
+    if dados: dados["tipo"] = TIPO_MAP[dados["tipo"]]
+
+    return dados
 

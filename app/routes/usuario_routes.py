@@ -55,6 +55,7 @@ def login():
     dados = request.json
     login = dados.get("login")
     senha = dados.get("senha")
+
     try:
         if (usuario := controller.login(login, senha)):
             token = jwt.encode(
@@ -68,8 +69,8 @@ def login():
                 app.config['SECRET_KEY'],
                 algorithm="HS256"
             )
-            return jsonify({"token": token})
+            return jsonify({"token": token })
         else:
             return jsonify({"erro": "Credenciais inválidas"}), 401
     except Exception as e:
-        return jsonify({'mensagem': str(e)}), 500
+        return jsonify({'erro': str(e)}), 500
