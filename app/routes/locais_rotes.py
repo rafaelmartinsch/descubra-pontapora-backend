@@ -80,11 +80,22 @@ def criar_ponto_turistico():
     Throws:
         Retorna no JSON as exceções que ocorrerem das funções chamadas no escopo try.
     """
-
     dados = request.json
     
-    # Validação do campo descrição
-    if dados.get('descricao') and len(dados.get('descricao')) > 200:
+    # Validação de campos obrigatórios
+    campos_obrigatorios = {
+        'titulo': 'Título', 'tipo': 'Categoria', 'categoria': 'Subcategoria',
+        'endereco': 'Endereço', 'capa': 'URL da Imagem', 'hra_funcionamento': 'Horário de Funcionamento',
+        'localiza_long': 'Longitude', 'localiza_lat': 'Latitude', 'descricao': 'Descrição',
+        'detalhes': 'Detalhes'
+    }
+
+    for campo_chave, campo_nome in campos_obrigatorios.items():
+        if campo_chave not in dados or not str(dados[campo_chave]).strip():
+            return jsonify({'mensagem': f'O campo "{campo_nome}" é obrigatório.'}), 400
+
+    # Validação do tamanho do campo descrição
+    if len(dados.get('descricao')) > 200:
         return jsonify({'mensagem': 'O campo descrição não pode exceder 200 caracteres.'}), 400
 
     try:
@@ -104,8 +115,20 @@ def editar_ponto_turistico(id):
     """
     dados = request.json
     
-    # Validação do campo descrição
-    if dados.get('descricao') and len(dados.get('descricao')) > 200:
+    # Validação de campos obrigatórios
+    campos_obrigatorios = {
+        'titulo': 'Título', 'tipo': 'Categoria', 'categoria': 'Subcategoria',
+        'endereco': 'Endereço', 'capa': 'URL da Imagem', 'hra_funcionamento': 'Horário de Funcionamento',
+        'localiza_long': 'Longitude', 'localiza_lat': 'Latitude', 'descricao': 'Descrição',
+        'detalhes': 'Detalhes'
+    }
+
+    for campo_chave, campo_nome in campos_obrigatorios.items():
+        if campo_chave not in dados or not str(dados[campo_chave]).strip():
+            return jsonify({'mensagem': f'O campo "{campo_nome}" é obrigatório.'}), 400
+
+    # Validação do tamanho do campo descrição
+    if len(dados.get('descricao')) > 200:
         return jsonify({'mensagem': 'O campo descrição não pode exceder 200 caracteres.'}), 400
         
     try:
