@@ -86,7 +86,10 @@ def inserir_estabelecimento(dados):
     Parâmetros :
         dados (dict): Mesma estrutura de inserir_estabelecimento()
     """
-    return model.inserir_estabelecimento(dados)
+    id = model.inserir_estabelecimento(dados)
+    if dados.get("capa"):
+        model_imagem.inserir_capa(dados["capa"], dados["titulo"], tipo_origem='L', origem_id=id)
+    return id
 
 def atualizar_estabelecimento(id, dados):
     """
@@ -97,6 +100,13 @@ def atualizar_estabelecimento(id, dados):
     Retorno:
         int: Número de linhas afetadas (0 ou 1)
     """
+    if dados.get("capa"):
+        # Verifica se já existe uma imagem de capa, se sim atualiza, senão cria.
+        if model_imagem.existe_imagem_capa('L', id):
+             model_imagem.atualizar_imagem_capa(dados["capa"], dados["titulo"], 'L', id)
+        else:
+             model_imagem.inserir_capa(dados["capa"], dados["titulo"], 'L', id)
+             
     return model.atualizar_estabelecimento(id, dados)
 
 def deletar_estabelecimento(id):
