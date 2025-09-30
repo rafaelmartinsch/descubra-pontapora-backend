@@ -48,6 +48,8 @@ def criar_evento(data):
         local = html.escape(data.get('local', ''))
         data_evento = data.get('data', '')
         dt_fim = data.get('dt_fim', None)
+        aberto = data.get('aberto', '')
+        site = data.get('site', None)
         caminho_imagem_capa = data.get('caminho_imagem_capa', None)
         legenda_imagem_capa = data.get('legenda_imagem_capa', None)
 
@@ -65,10 +67,10 @@ def criar_evento(data):
                 raise ValueError("Formato de data final inválido")
 
         sql = """
-        INSERT INTO eventos (titulo, descricao, local, data, dt_fim)
-        VALUES (%s, %s, %s, %s, %s)
+        INSERT INTO eventos (titulo, descricao, local, data, dt_fim, aberto, site)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
-        cursor.execute(sql, (titulo, descricao, local, data_evento, dt_fim))
+        cursor.execute(sql, (titulo, descricao, local, data_evento, dt_fim, aberto, site))
         conexao.commit()
         evento_id = cursor.lastrowid
 
