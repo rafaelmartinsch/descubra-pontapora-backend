@@ -195,12 +195,18 @@ def editar_estabelecimento(id):
     """
     dados = request.json
 
-    # Validação
+    # Validação mais completa
     campos_obrigatorios = {
-        'titulo': 'Título', 'tipo': 'Categoria', 'categoria': 'Subcategoria', 'descricao': 'Descrição', 'detalhes': 'Detalhes', 'endereco': 'Endereço', 'capa': 'URL da Imagem'
+        'titulo': 'Título', 
+        'tipo': 'Categoria', 
+        'categoria': 'Subcategoria', 
+        'descricao': 'Descrição', 
+        'detalhes': 'Detalhes', 
+        'endereco': 'Endereço', 
+        'capa': 'URL da Imagem'
     }
     for campo_chave, campo_nome in campos_obrigatorios.items():
-        if campo_chave not in dados or not str(dados[campo_chave]).strip():
+        if campo_chave not in dados or not str(dados.get(campo_chave, '')).strip():
             return jsonify({'mensagem': f'O campo "{campo_nome}" é obrigatório.'}), 400
             
     if len(dados.get('descricao', '')) > 200:

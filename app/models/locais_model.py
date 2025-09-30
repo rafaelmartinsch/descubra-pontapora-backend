@@ -257,6 +257,12 @@ def inserir_estabelecimento(dados):
         )
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'E')
     """
+    # Sanitiza campos que podem ser nulos para o banco de dados
+    lat = dados.get('localiza_lat')
+    lon = dados.get('localiza_long')
+    localiza_lat = lat if str(lat).strip() else None
+    localiza_long = lon if str(lon).strip() else None
+
     cursor.execute(sql, (
         dados.get('titulo'),
         dados.get('descricao'),
@@ -264,8 +270,8 @@ def inserir_estabelecimento(dados):
         dados.get('tipo'),
         dados.get('categoria'),
         dados.get('endereco'),
-        dados.get('localiza_long'),
-        dados.get('localiza_lat'),
+        localiza_long,
+        localiza_lat,
         dados.get('hra_funcionamento'),
         dados.get('site')
     ))
@@ -301,6 +307,12 @@ def atualizar_estabelecimento(id, dados):
             localiza_long = %s
         WHERE id = %s AND grupo = 'E'
     """
+    # Sanitiza campos que podem ser nulos para o banco de dados
+    lat = dados.get('localiza_lat')
+    lon = dados.get('localiza_long')
+    localiza_lat = lat if str(lat).strip() else None
+    localiza_long = lon if str(lon).strip() else None
+
     cursor.execute(sql, (
         dados.get('titulo'),
         dados.get('descricao'),
@@ -310,8 +322,8 @@ def atualizar_estabelecimento(id, dados):
         dados.get('endereco'),
         dados.get('hra_funcionamento'),
         dados.get('site'),
-        dados.get('localiza_lat'),
-        dados.get('localiza_long'),
+        localiza_lat,
+        localiza_long,
         id
     ))
     conexao.commit()
